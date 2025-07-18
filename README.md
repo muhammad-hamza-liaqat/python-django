@@ -19,29 +19,29 @@ This is a basic setup guide for starting a new Django project. It includes instr
 
 ```bash
 # 1. Clone the repo (or create your project folder)
-git clone https://github.com/your/repo.git
+git clone https://github.com/muhammad-hamza-liaqat/python-django.git
 cd your_project_folder
 
 # 2. Create virtual environment
-python3 -m venv venv
+python3 -m venv env
 
 # 3. Activate virtual environment
-source venv/bin/activate
+source env/bin/activate
 ```
 
 ### On Windows (CMD or PowerShell)
 
 ```bash
 # 1. Clone the repo (or create your project folder)
-git clone https://github.com/your/repo.git
+git clone https://github.com/muhammad-hamza-liaqat/python-django.git
 cd your_project_folder
 
 # 2. Create virtual environment
-python -m venv venv
+python -m venv env
 
 # 3. Activate virtual environment
 # For CMD
-venv\Scripts\activate
+env\Scripts\activate
 
 # For PowerShell
 venv\Scripts\Activate.ps1
