@@ -38,7 +38,7 @@ class GetUserView(APIView):
         # print(f"incoming user------->", user.name)
         # print(f"incoming user------->", user.id)
         # print(f"incoming user------->", user.gender)
-        print(f"incoming user------->", user.wallet)
+        # print(f"incoming user------->", user.wallet)
         return Response({
             "status_code": 200,
             "message": "User information fetched successfully",
