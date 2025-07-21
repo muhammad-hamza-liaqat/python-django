@@ -1,8 +1,8 @@
 from rest_framework import serializers
+from rest_framework.exceptions import APIException
 from authapp.models import User
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -15,13 +15,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-
-        # token["id"] = user.id
         token["email"] = user.email
         token["name"] = user.name
         return token
@@ -31,27 +30,38 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         password = attrs.get("password")
 
         try:
-            user_obj = User.objects.get(email=email)
+            User.objects.get(email=email)
         except User.DoesNotExist:
-            raise serializers.ValidationError({"email": "No account found with this email."})
+            raise APIException({
+                "status_code": 404,
+                "message": "No account found with this email."
+            })
 
         user = authenticate(request=self.context.get("request"), email=email, password=password)
         if user is None:
-            raise serializers.ValidationError({"password": "Invalid password."})
+            raise APIException({
+                "status_code": 409,
+                "message": "Invalid Password"
+            })
 
         if not user.is_active:
-            raise serializers.ValidationError({"detail": "User account is inactive."})
+            raise APIException({
+                "status_code": 403,
+                "message": "User account is inactive."
+            })
 
         refresh = self.get_token(user)
 
         return {
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
-            'user': {
-                'id': user.id,
-                'name': user.name,
-                'email': user.email
-            }
+            "status_code": 200,
+            "message": "Login successful",
+            "token":{
+                'access': str(refresh.access_token),
+                'refresh': str(refresh)
+                },
+                'user': {
+                    'id': user.id,
+                    'name': user.name,
+                    'email': user.email
+                }
         }
-
-
