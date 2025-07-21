@@ -16,7 +16,7 @@ class SignupView(APIView):
             user = serializer.save()
             return success_response(
                 message="User registered successfully",
-                data={"id": user.id, "email": user.email},
+                data={"id": user.id, "email": user.email, "user_wallet": user.wallet.id},
                 status_code=201
             )
         return error_response(
@@ -33,10 +33,12 @@ class GetUserView(APIView):
 
     def get(self, request):
         user = request.user
+        wallet = user.wallet
         # print(f"incoming user------->", user)
         # print(f"incoming user------->", user.name)
         # print(f"incoming user------->", user.id)
         # print(f"incoming user------->", user.gender)
+        print(f"incoming user------->", user.wallet)
         return Response({
             "status_code": 200,
             "message": "User information fetched successfully",
@@ -46,5 +48,10 @@ class GetUserView(APIView):
                 "email": user.email,
                 "phone": user.phone,
                 "gender": user.gender,
+            },
+            "wallet":{
+                "wallet_id": str(wallet.id) if wallet else None,
+                "balance": str(wallet.balance) if wallet else None,
+                "created_at": wallet.created_at.isoformat() if wallet else None
             }
         }, status=status.HTTP_200_OK)
