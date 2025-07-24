@@ -6,6 +6,8 @@ from server.utils import success_response, error_response
 from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
+from authapp.models import User
+from authapp.decorators_is_admin import admin_required
 
 
 
@@ -58,3 +60,17 @@ class GetUserView(APIView):
                 "created_at": wallet.created_at.isoformat() if wallet else None
             }
         }, status=status.HTTP_200_OK)
+    
+class GetAllUsers(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    # added the decorated.
+    @admin_required
+    def get(self, request):
+        user = request.user
+        users = User.objects.all().values('id', 'name', 'email', 'phone', 'gender')
+        return success_response(
+            message="All users fetched successfully",
+            data={"users": list(users)},
+            status_code=200
+        )
