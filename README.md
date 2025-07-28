@@ -77,17 +77,21 @@ ALLOWED_HOSTS=127.0.0.1,localhost
 > You can use `python-decouple` or `dotenv` to load `.env` in `settings.py`.
 
 Install:
+
 ```bash
-pip install python-decouple
+pip install python-dotenv
 ```
 
 In `settings.py`, load like this:
-```python
-from decouple import config
 
-SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
+```python
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG') == 'True'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 ```
 
 ---
@@ -100,19 +104,26 @@ Run the development server:
 python manage.py runserver
 ```
 
+To run the seeders, to create super_user
+
+```bash
+python manage.py run_seeders
+```
+
 Visit: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 ---
 
 ## 📂 Basic Commands
 
-| Task                            | Command                          |
-|---------------------------------|----------------------------------|
-| Start a new app                 | `python manage.py startapp appname` |
-| Make migrations                 | `python manage.py makemigrations` |
-| Apply migrations                | `python manage.py migrate`       |
-| Create superuser                | `python manage.py createsuperuser` |
-| Collect static files (prod)    | `python manage.py collectstatic` |
+| Task                        | Command                             |
+| --------------------------- | ----------------------------------- |
+| Start a new app             | `python manage.py startapp appname` |
+| Make migrations             | `python manage.py makemigrations`   |
+| Apply migrations            | `python manage.py migrate`          |
+| Create superuser            | `python manage.py createsuperuser`  |
+| Collect static files (prod) | `python manage.py collectstatic`    |
+| run the seeders superuser   | `python manage.py run_seeders`      |
 
 ---
 
@@ -123,6 +134,7 @@ Visit: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 - Use `.gitignore` to exclude `venv/`, `.env`, `__pycache__/`, etc.
 
 Add a `.gitignore`:
+
 ```gitignore
 venv/
 __pycache__/
@@ -147,6 +159,7 @@ python manage.py test
 ## 🚀 Deployment
 
 For production, use:
+
 - `DEBUG=False`
 - `ALLOWED_HOSTS=['yourdomain.com']`
 - Consider deploying on **Render**, **Heroku**, or **DigitalOcean**
