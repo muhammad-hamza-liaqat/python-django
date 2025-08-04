@@ -3,25 +3,16 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 import uuid
 
-# user_wallet model
-class UserWallet(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    balance = models.DecimalField(_("Balance"), max_digits=10, decimal_places=2, default=0.00)
-    created_at = models.DateTimeField(_("Created At"), auto_now_add=True)
-
-    def __str__(self):
-        return f"Wallet {self.id} - {self.balance}"
-
-# custom_user manager
 class UserManager(BaseUserManager):
     def create_user(self, email, name, phone, gender, password=None):
         if not email:
             raise ValueError(_("Users must have an email address"))
         email = self.normalize_email(email)
-        wallet = UserWallet.objects.create()
-        user = self.model(email=email, name=name, phone=phone, gender=gender, wallet=wallet)
+        user = self.model(email=email, name=name, phone=phone, gender=gender)
         user.set_password(password)
         user.save(using=self._db)
+        # Create wallet linked to this user after saving user
+        UserWallet.objects.create(user=user)
         return user
 
     def create_superuser(self, email, name, phone, gender, password):
@@ -31,7 +22,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-# custom_user model
+
 class User(AbstractBaseUser, PermissionsMixin):
     GENDER_CHOICES = (
         ('male', _('Male')),
@@ -46,7 +37,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_("Is active"), default=True)
     is_staff = models.BooleanField(_("Is staff"), default=False)
     is_admin = models.BooleanField(_("Is admin"), default=False)
-    wallet = models.OneToOneField(UserWallet, verbose_name=_("Wallet"), on_delete=models.CASCADE, null=True, blank=True)
 
     objects = UserManager()
 
@@ -55,3 +45,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class UserWallet(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    balance = models.DecimalField(_("Balance"), max_digits=10, decimal_places=2, default=0.00)
+    created_at = models.DateTimeField(_("Created At"), auto_now_add=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wallet')
+
+    def __str__(self):
+        return f"Wallet {self.id} - {self.balance}"

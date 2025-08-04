@@ -59,11 +59,11 @@ msgstr "성별"
 
 #: authapp/models.py:46
 msgid "Is active"
-msgstr ""
+msgstr "활성 상태입니다."
 
 #: authapp/models.py:47
 msgid "Is staff"
-msgstr "활성 상태입니다."
+msgstr "직원인가"
 
 #: authapp/models.py:48
 msgid "Is admin"
